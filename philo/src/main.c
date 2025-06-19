@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: qais <qais@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: qhatahet <qhatahet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/01 22:59:06 by qais              #+#    #+#             */
-/*   Updated: 2025/06/09 16:28:05 by qais             ###   ########.fr       */
+/*   Updated: 2025/06/19 20:20:45 by qhatahet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,21 +28,36 @@ void	*routine(void *content)
 	return (NULL);
 }
 
-void	init_philos(char *str)
+int	init_philos(char **args)
 {
-	t_philo	philos;
-	int		i;
-
-	i = 1;
-	philos.philo_num = ft_atoi(str);
-	while (i <= philos.philo_num)
+	t_table	*utils;
+	
+	utils = malloc (sizeof(t_table *));
+	if (!utils)
+		return (1);
+	utils->philos = malloc (sizeof(t_philo *));
+	if (!utils->philos)
+		return (1);
+	utils->philos = NULL;
+	utils->forks = malloc (sizeof(pthread_mutex_t) * ft_atoi(args[1]));
+	if (!utils->forks)
+		return (1);
+	utils->philo_num = ft_atoi(args[1]);
+	utils->t_die = ft_atoi(args[2]);
+	utils->t_eat = ft_atoi(args[3]);
+	utils->t_sleep = ft_atoi(args[4]);
+	if (args[5])
 	{
-		printf("%d\n", i);
-		pthread_create(&philos.philo, NULL, routine, ft_itoa(i));
-		pthread_join(philos.philo, NULL);
-		i++;
-		usleep(3000);
+		utils->philos->meals = ft_atoi(args[5]);
+		if (utils->philos->meals == 0)
+		{
+			printf("arg[5] invalid argument\n");
+			return (1);
+		}
 	}
+	else
+		utils->philos->meals = -1;
+	return (0);
 }
 
 int	validate_input(char **argv)
@@ -73,20 +88,12 @@ int	validate_input(char **argv)
 
 int	main(int argc, char **argv)
 {
-	struct timeval	start, end;
-	gettimeofday(&start, NULL);
-	for (int i = 0; i < 5; i++)
-		printf("qais\n");
-	gettimeofday(&end, NULL);
-	long seconds = end.tv_sec - start.tv_sec;
-	long useconds = end.tv_usec - start.tv_usec;
-	long total_microseconds = seconds * 1000000 + useconds;
-	printf("Elapsed time: %ld microseconds\n", total_microseconds);
 	if (argc == 5 || argc == 6)
 	{
 		if (!validate_input(argv))
 			return (1);
-		init_philos(argv[1]);
+		if (init_philos(argv))
+			return (1);
 	}
 	else
 	{
