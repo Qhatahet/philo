@@ -6,7 +6,7 @@
 /*   By: qhatahet <qhatahet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/01 22:59:06 by qais              #+#    #+#             */
-/*   Updated: 2025/06/19 20:20:45 by qhatahet         ###   ########.fr       */
+/*   Updated: 2025/06/20 17:36:32 by qhatahet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,43 +28,60 @@ void	*routine(void *content)
 	return (NULL);
 }
 
-int	init_philos(char **args)
+t_table	*allocate_init_table(char **args)
 {
-	t_table	*utils;
-	
-	utils = malloc (sizeof(t_table *));
-	if (!utils)
-		return (1);
-	utils->philos = malloc (sizeof(t_philo *));
-	if (!utils->philos)
-		return (1);
-	utils->philos = NULL;
-	utils->forks = malloc (sizeof(pthread_mutex_t) * ft_atoi(args[1]));
-	if (!utils->forks)
-		return (1);
-	utils->philo_num = ft_atoi(args[1]);
-	utils->t_die = ft_atoi(args[2]);
-	utils->t_eat = ft_atoi(args[3]);
-	utils->t_sleep = ft_atoi(args[4]);
+	t_table	*table;
+
+	table = malloc(sizeof(t_table *));
+	if (!table)
+		return (NULL);
+	table = NULL;
+	table->philos = ft_calloc(sizeof(t_philo), ft_atoi(args[1]));
+	if (!table->philos)
+		return (NULL);
+	table->philos = NULL;
+	table->forks = ft_calloc(sizeof(pthread_mutex_t), ft_atoi(args[1]));
+	if (!table->forks)
+		return (NULL);
+	table->forks = NULL;
+	table->philo_num = ft_atoi(args[1]);
+	table->t_die = ft_atoi(args[2]);
+	table->t_eat = ft_atoi(args[3]);
+	table->t_sleep = ft_atoi(args[4]);
 	if (args[5])
-	{
-		utils->philos->meals = ft_atoi(args[5]);
-		if (utils->philos->meals == 0)
-		{
-			printf("arg[5] invalid argument\n");
-			return (1);
-		}
-	}
+		table->philos->meals = ft_atoi(args[5]);
 	else
-		utils->philos->meals = -1;
+		table->philos->meals = -1;
+	return (table);
+}
+
+t_table	*init_table(char **args)
+{
+	t_table	*table;
+
+	table = allocate_init_table(args);
+	if (!table)
+		return (NULL);
+	return (table);
+}
+
+int	check_last_arg(char *arg)
+{
+	if (ft_atoi(arg) == 0)
+	{
+		printf("arg[5] invalid argument\n");
+		return (1);
+	}	
 	return (0);
 }
 
-int	validate_input(char **argv)
+int	validate_input(int argc, char **argv)
 {
 	int	i;
 	int	j;
 
+	if (argc == 6 && check_last_arg(argv[5]))
+		return(0);
 	i = 1;
 	while (argv[i])
 	{
@@ -88,11 +105,14 @@ int	validate_input(char **argv)
 
 int	main(int argc, char **argv)
 {
+	t_table	*table;
+
 	if (argc == 5 || argc == 6)
 	{
-		if (!validate_input(argv))
+		if (!validate_input(argc, argv))
 			return (1);
-		if (init_philos(argv))
+		table = init_table(argv);
+		if (!table)
 			return (1);
 	}
 	else

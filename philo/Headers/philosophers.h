@@ -6,7 +6,7 @@
 /*   By: qhatahet <qhatahet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/01 22:59:37 by qais              #+#    #+#             */
-/*   Updated: 2025/06/19 20:17:49 by qhatahet         ###   ########.fr       */
+/*   Updated: 2025/06/20 17:36:05 by qhatahet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <pthread.h>
 # include <unistd.h>
+# include <string.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/time.h>
@@ -46,6 +47,7 @@ typedef struct s_table
 	long				t_sleep;
 }			t_table;
 
+void	*ft_calloc(size_t nmemb, size_t size);
 int		ft_isdigit(int c);
 int		ft_atoi(const char *nptr);
 char	*ft_itoa(int n);
