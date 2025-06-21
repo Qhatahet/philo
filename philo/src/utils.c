@@ -6,7 +6,7 @@
 /*   By: qhatahet <qhatahet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 22:32:05 by qais              #+#    #+#             */
-/*   Updated: 2025/06/20 17:35:32 by qhatahet         ###   ########.fr       */
+/*   Updated: 2025/06/21 14:30:51 by qhatahet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void	*ft_calloc(size_t nmemb, size_t size)
 	if (!p)
 		return (NULL);
 	memset(p, '\0', nmemb * size);
+	return (p);
 }
 
 static int	numlen(int n)
