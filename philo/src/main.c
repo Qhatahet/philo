@@ -6,7 +6,7 @@
 /*   By: qhatahet <qhatahet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/01 22:59:06 by qais              #+#    #+#             */
-/*   Updated: 2025/06/21 19:36:40 by qhatahet         ###   ########.fr       */
+/*   Updated: 2025/06/22 20:35:03 by qhatahet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,47 +18,24 @@
 
 */
 
-void	ft_eating(t_table *table, int id)
-{
-	printf("")
-}
-
-void	*routine(void *content)
-{
-	t_table *table;
-	int		id;
-
-	table = (t_table *)content;
-	id = table->philos[table->philo_seat]->philo_id;
-	if (id % 2 == 0)
-		usleep(100);
-	ft_eating(table,id);
-	pthread_mutex_lock(&table->lock);
-	if(table->philo_num == table->philo_seat+1)
-	{
-		table->flag = 1;
-		pthread_mutex_unlock(&table->lock);
-		return (NULL);
-	}
-	if(id == table->philo_seat + 1 && table->philo_num != table->philo_seat + 1)
-		table->philo_seat++;
-	pthread_mutex_unlock(&table->lock);
-	return (NULL);
-}
-
-void	init_philo(t_table *table, char *arg)
+void	init_philo(t_table *table, char **arg)
 {
 	int	i;
 
 	i = 1;
-	while (i <= ft_atoi(arg))
+	while (i <= ft_atoi(arg[1]))
 	{
-		table->philos[i - 1] = malloc(sizeof(t_philo ));
+		table->philos[i - 1] = malloc(sizeof(t_philo));
 		table->philos[i - 1]->philo_id = i;
 		table->philos[i - 1]->last_meal = 0;
-		table->philos[i - 1]->left = 0;
-		table->philos[i - 1]->right = 0;
-		table->philos[i - 1]->meals = 0;
+		table->philos[i - 1]->left = &table->forks[i - 1];
+		table->philos[i - 1]->right = &table->forks[i % table->philo_num];
+		if (arg[5])
+			table->philos[i - 1]->meals = ft_atoi(arg[5]);
+		else
+			table->philos[i - 1]->meals = 0;
+		
+		table->philos[i - 1]->table = table;
 		i++;
 	}
 }
@@ -73,7 +50,6 @@ t_table	*allocate_init_table(char **args)
 	table->philos = ft_calloc(sizeof(t_philo), ft_atoi(args[1]));
 	if (!table->philos)
 		return (NULL);
-	init_philo(table, args[1]);
 	table->forks = ft_calloc(sizeof(pthread_mutex_t), ft_atoi(args[1]));
 	if (!table->forks)
 		return (NULL);
@@ -85,6 +61,7 @@ t_table	*allocate_init_table(char **args)
 		table->num_meals = ft_atoi(args[5]);
 	else
 		table->num_meals = -1;
+	init_philo(table, args);
 	return (table);
 }
 
@@ -99,25 +76,6 @@ long	ya_zenji_3arf_km_alsa3a_hassa(struct timeval start)
 	return (time);
 }
 
-void 	*ft_waiter(void *args)
-{
-	t_table *table;
-	int		i;
-	
-	i = 0;
-	table = (t_table *) args;
-	while(1)
-	{
-		if(table->flag)
-			return (NULL);
-		if(ya_zenji_3arf_km_alsa3a_hassa(table->start) - table->philos[i]->last_meal)
-		{
-			table->flag = 1;
-			return (NULL);
-		}
-	}
-	return (NULL);
-}
 
 void	joining(t_table *table)
 {
@@ -139,11 +97,10 @@ void	init_threads(t_table *table)
 	i = 0;
 	while (i != table->philo_num)
 	{
-		if(table->flag == 1)
-			break ;
-		if(pthread_create(&table->philos[i]->philo, NULL, &routine, (void *)table) == -1)
+		if(pthread_create(&table->philos[i]->philo, NULL, &routine, (void *)table->philos[i]) == -1)
 			break;
 		i++;
+		usleep(100);
 	}
 	pthread_join(monitor,NULL);
 	joining(table);

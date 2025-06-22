@@ -1,8 +1,7 @@
 CC = cc
 
-CFLAGS = -Werror -Wextra -Wall -I Headers -g
-
-SRCS = ./src/main.c ./src/utils.c
+CFLAGS = -Werror -Wextra -Wall -I Headers -g 
+SRCS = ./src/main.c ./src/utils.c ./src/routine.c
 
 OBJS_DIR := objects
 
