@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: qhatahet <qhatahet@student.42.fr>          +#+  +:+       +#+        */
+/*   By: qais <qais@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 22:32:05 by qais              #+#    #+#             */
-/*   Updated: 2025/06/22 17:41:13 by qhatahet         ###   ########.fr       */
+/*   Updated: 2025/06/23 03:37:55 by qais             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,4 +59,31 @@ int	ft_atoi(const char *nptr)
 		num++;
 	}
 	return (res * sign);
+}
+
+void	ft_usleep(t_philo *philo, long time)
+{
+	long time_when_start;
+	long time_to_stop;
+	long time_now;
+
+	time_when_start = ft_clock(philo->table->start);
+	time_to_stop = time_when_start + time;
+	while (1)
+	{
+		time_now = ft_clock(philo->table->start);
+		if (check_if_anyone_died(philo))
+			break;
+		if (time_to_stop < time_now)
+			break ;
+		usleep(1);
+	}
+}
+
+void print_with_check(t_philo *philo,char *s)
+{
+	pthread_mutex_lock(&philo->table->lock);
+	if (!philo->table->flag)
+		printf("%li %i %s\n", ft_clock(philo->table->start), philo->philo_id, s);
+	pthread_mutex_unlock(&philo->table->lock);
 }

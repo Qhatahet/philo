@@ -12,25 +12,6 @@
 
 #include "philosophers.h"
 
-void	ft_usleep(t_philo *philo, long time)
-{
-	long time_when_start;
-	long time_to_stop;
-	long time_now;
-
-	time_when_start = ya_zenji_3arf_km_alsa3a_hassa(philo->table->start);
-	time_to_stop = time_when_start + time;
-	while (1)
-	{
-		time_now = ya_zenji_3arf_km_alsa3a_hassa(philo->table->start);
-		if (check_if_anyone_died(philo))
-			break;
-		if (time_to_stop < time_now)
-			break ;
-		usleep(1);
-	}
-}
-
 int check_if_anyone_died(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->table->lock);
@@ -43,59 +24,6 @@ int check_if_anyone_died(t_philo *philo)
 	return (0);
 }
 
-void print_with_check(t_philo *philo,char *s)
-{
-	pthread_mutex_lock(&philo->table->lock);
-	if (!philo->table->flag)
-		printf("%li %i %s\n", ya_zenji_3arf_km_alsa3a_hassa(philo->table->start), philo->philo_id, s);
-	pthread_mutex_unlock(&philo->table->lock);
-}
-
-void	ft_eating(t_philo *philo)
-{
-	pthread_mutex_lock(&philo->table->lock);
-	philo->last_meal = ya_zenji_3arf_km_alsa3a_hassa(philo->table->start);
-	if (philo->table->num_meals != -1)
-		philo->meals--;
-	pthread_mutex_unlock(&philo->table->lock);
-	print_with_check(philo, "is eating");
-	ft_usleep(philo, philo->table->t_eat);
-
-}
-
-void	ft_sleeping(t_philo *philo)
-{
-	print_with_check(philo, "is sleeping");
-	ft_usleep(philo, philo->table->t_sleep);
-}
-void	ft_thinking(t_philo *philo)
-{
-	print_with_check(philo, "is thinking");
-}
-
-void ft_take_forks(t_philo *philo)
-{
-	if (philo->philo_id % 2 == 0)
-	{	
-		pthread_mutex_lock(philo->left);
-		print_with_check(philo, "has taken a fork");
-		pthread_mutex_lock(philo->right);
-		print_with_check(philo, "has taken a fork");
-	}
-	else
-	{
-		pthread_mutex_lock(philo->right);
-		print_with_check(philo, "has taken a fork");
-		pthread_mutex_lock(philo->left);
-		print_with_check(philo, "has taken a fork");
-	}
-}
-void ft_leave_forks(t_philo *philo)
-{
-	pthread_mutex_unlock(philo->left);
-	pthread_mutex_unlock(philo->right);
-}
-
 void	*routine(void *content)
 {
 	t_table *table;
@@ -103,6 +31,7 @@ void	*routine(void *content)
 	
 	philo = (t_philo *)content;
 	table = philo->table;
+	(void)table;
 	if (philo->table->philo_num == 1)
 	{
 		print_with_check(philo, "has taken a fork");
@@ -112,10 +41,10 @@ void	*routine(void *content)
 	while (1)
 	{
 		if (check_if_anyone_died(philo))
-			break ;	
-		ft_take_forks(philo);
+			break ;
+		pick_up_forks(philo);
 		ft_eating(philo);
-		ft_leave_forks(philo);
+		leave_forks(philo);
 		ft_sleeping(philo);
 		ft_thinking(philo);
 	}
@@ -161,11 +90,11 @@ void 	*ft_waiter(void *args)
 				return (NULL);
 			}
 		}
-		if(ya_zenji_3arf_km_alsa3a_hassa(table->start) - table->philos[i]->last_meal >= table->t_die)
+		if(ft_clock(table->start) - table->philos[i]->last_meal >= table->t_die)
 		{
 			table->flag = 1;
 			pthread_mutex_unlock(&table->lock);
-			printf("%li %i died\n",ya_zenji_3arf_km_alsa3a_hassa(table->start),table->philos[i]->philo_id);
+			printf("%li %i died\n", ft_clock(table->start), table->philos[i]->philo_id);
 			return (NULL);
 		}
 		pthread_mutex_unlock(&table->lock);
