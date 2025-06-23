@@ -6,7 +6,7 @@
 /*   By: qhatahet <qhatahet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 17:36:48 by qhatahet          #+#    #+#             */
-/*   Updated: 2025/06/23 18:29:52 by qhatahet         ###   ########.fr       */
+/*   Updated: 2025/06/23 22:01:59 by qhatahet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,18 +48,25 @@ void	*routine(void *content)
 	return (NULL);
 }
 
-int	check_if_all_eaten(t_table *table)
+static int	check_if_all_eaten(t_table *table)
 {
 	if (table->eaten == table->philo_num)
 		return (1);
 	return (0);
 }
 
-void	print_is_dead(t_table *table, int i)
+static int	meals(t_table *table)
 {
-	table->flag = 1;
-	pthread_mutex_unlock(&table->lock);
-	printf("%li %i died\n", ft_clock(table->start), table->philos[i]->philo_id);
+	if (table->num_meals != -1)
+	{
+		if (check_if_all_eaten(table))
+		{
+			table->flag = 1;
+			pthread_mutex_unlock(&table->lock);
+			return (1);
+		}
+	}
+	return (0);
 }
 
 void	*ft_waiter(void *args)
@@ -74,17 +81,16 @@ void	*ft_waiter(void *args)
 	while (1)
 	{
 		pthread_mutex_lock(&table->lock);
-		if (table->num_meals != -1)
-		{
-			if (check_if_all_eaten(table))
-			{
-				table->flag = 1;
-				pthread_mutex_unlock(&table->lock);
-				return (NULL);
-			}
-		}
-		if (ft_clock(table->start) - table->philos[i]->last_meal >= t_die)
+		if (meals(table))
 			return (NULL);
+		if (ft_clock(table->start) - table->philos[i]->last_meal >= t_die)
+		{
+			table->flag = 1;
+			pthread_mutex_unlock(&table->lock);
+			printf("%li %i died\n", ft_clock(table->start),
+				table->philos[i]->philo_id);
+			return (NULL);
+		}
 		pthread_mutex_unlock(&table->lock);
 	}
 	return (NULL);
