@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: qais <qais@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: qhatahet <qhatahet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/01 22:59:06 by qais              #+#    #+#             */
-/*   Updated: 2025/06/23 03:35:30 by qais             ###   ########.fr       */
+/*   Updated: 2025/06/23 17:32:00 by qhatahet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@
 
 long	ft_clock(struct timeval start)
 {
-	struct timeval 		current;
-	long time;
-	
-	gettimeofday(&current,NULL);
+	struct timeval	current;
+	long			time;
+
+	gettimeofday(&current, NULL);
 	time = (current.tv_sec - start.tv_sec) * 1000;
 	time += (current.tv_usec - start.tv_usec) / 1000;
 	return (time);
@@ -31,7 +31,9 @@ long	ft_clock(struct timeval start)
 
 void	joining(t_table *table)
 {
-	int  i = 0;
+	int	i;
+
+	i = 0;
 	while (i < table->philo_num)
 	{
 		pthread_join(table->philos[i]->philo, NULL);
@@ -41,20 +43,20 @@ void	joining(t_table *table)
 
 void	init_threads(t_table *table)
 {
-	int 			i;
-	pthread_t monitor;
+	int			i;
+	pthread_t	monitor;
 
 	pthread_create(&monitor, NULL, &ft_waiter, (void *)table);
 	table->philo_seat = 0;
 	i = 0;
 	while (i != table->philo_num)
 	{
-		if(pthread_create(&table->philos[i]->philo, NULL, &routine, (void *)table->philos[i]) == -1)
-			break;
+		if (pthread_create(&table->philos[i]->philo, NULL,
+				&routine, (void *)table->philos[i]) == -1)
+			break ;
 		i++;
-		usleep(100);
 	}
-	pthread_join(monitor,NULL);
+	pthread_join(monitor, NULL);
 	joining(table);
 }
 

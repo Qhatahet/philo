@@ -1,6 +1,6 @@
 CC = cc
 
-CFLAGS = -Werror -Wextra -Wall -I Headers -g 
+CFLAGS = -Werror -Wextra -Wall -I Headers
 SRCS = ./src/main.c ./src/utils.c ./src/routine.c ./src/routine_utils.c\
 ./src/input_validation.c ./src/init.c ./src/resturant_clean_up.c\
 

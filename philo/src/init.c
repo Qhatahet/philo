@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: qais <qais@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: qhatahet <qhatahet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 03:00:37 by qais              #+#    #+#             */
-/*   Updated: 2025/06/23 03:02:35 by qais             ###   ########.fr       */
+/*   Updated: 2025/06/23 17:28:01 by qhatahet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,6 @@ void	init_philo(t_table *table, char **arg)
 			table->philos[i - 1]->meals = ft_atoi(arg[5]);
 		else
 			table->philos[i - 1]->meals = 0;
-		
 		table->philos[i - 1]->table = table;
 		i++;
 	}
@@ -51,6 +50,7 @@ t_table	*allocate_init_table(char **args)
 	table->t_die = ft_atoi(args[2]);
 	table->t_eat = ft_atoi(args[3]);
 	table->t_sleep = ft_atoi(args[4]);
+	table->eaten = 0;
 	if (args[5])
 		table->num_meals = ft_atoi(args[5]);
 	else

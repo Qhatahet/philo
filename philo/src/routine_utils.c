@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   routine_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: qais <qais@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: qhatahet <qhatahet@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 03:17:21 by qais              #+#    #+#             */
-/*   Updated: 2025/06/23 03:35:57 by qais             ###   ########.fr       */
+/*   Updated: 2025/06/23 18:21:23 by qhatahet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,10 @@ void	ft_eating(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->table->lock);
 	philo->last_meal = ft_clock(philo->table->start);
-	if (philo->table->num_meals != -1)
+	if (philo->table->num_meals != -1 || philo->meals != 0)
 		philo->meals--;
+	if (philo->meals == 0)
+		philo->table->eaten++;
 	pthread_mutex_unlock(&philo->table->lock);
 	print_with_check(philo, "is eating");
 	ft_usleep(philo, philo->table->t_eat);
@@ -32,12 +34,14 @@ void	ft_sleeping(t_philo *philo)
 void	ft_thinking(t_philo *philo)
 {
 	print_with_check(philo, "is thinking");
+	ft_usleep(philo, 5);
 }
 
-void pick_up_forks(t_philo *philo)
+void	pick_up_forks(t_philo *philo)
 {
 	if (philo->philo_id % 2 == 0)
-	{	
+	{
+		ft_usleep(philo, 0);
 		pthread_mutex_lock(philo->left);
 		print_with_check(philo, "has taken a fork");
 		pthread_mutex_lock(philo->right);
@@ -52,7 +56,7 @@ void pick_up_forks(t_philo *philo)
 	}
 }
 
-void leave_forks(t_philo *philo)
+void	leave_forks(t_philo *philo)
 {
 	pthread_mutex_unlock(philo->left);
 	pthread_mutex_unlock(philo->right);
